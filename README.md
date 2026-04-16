@@ -2,10 +2,10 @@
 
 <div align="center">
 
-![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![Version](https://img.shields.io/badge/version-2.0-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
-![License](https://img.shields.io/badge/license-Educational-green.svg)
+![STATUS](https://img.shields.io/badge/status-active-success?style=flat-square&logo=github)
+![VERSION](https://img.shields.io/badge/version-2.0-blue?style=flat-square&logo=semantic-release)
+![NODE](https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square&logo=node.js)
+![LICENSE](https://img.shields.io/badge/license-educational-lightgrey?style=flat-square&logo=open-source-initiative)
 
 **A full-stack data analytics dashboard for exploring 1.3M+ NYC taxi trips — featuring a streaming ETL pipeline, normalised SQLite database, Z-score anomaly detection, and a rich interactive frontend.**
 
@@ -430,6 +430,7 @@ curl "http://localhost:3001/api/trips?hour=8&vendor=1&sort=fare_estimate&order=d
 - Role: XML Parsing & Integration
 ---
 
+---
 ## Project Management
 
 ### Team Tracking
@@ -535,7 +536,6 @@ npm start
 
 - [API Reference](#api-documentation) — all 7 endpoints with request/response examples
 - [Database Schema](schema.sql) — full DDL, index definitions, and data cleaning rules
-- [AI Usage Log](docs/ai-usage-log.md)
 - [ERD Diagram](docs/ERD.pdf) 
 
 ---
@@ -612,7 +612,7 @@ This project is an educational assignment for the Database Systems course.
 
 ### Star this repo if it helped you!
 
-**Made with 🚕 and late nights by Team [YOUR TEAM NAME]**
+**Made by Team [PixelStack]**
 
 [⬆ Back to Top](#-nyc-taxi-explorer--urban-mobility-intelligence)
 
