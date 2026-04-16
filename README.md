@@ -536,7 +536,7 @@ npm start
 
 - [API Reference](#api-documentation) — all 7 endpoints with request/response examples
 - [Database Schema](schema.sql) — full DDL, index definitions, and data cleaning rules
-- [ERD](ER diagram)
+- [ERD](ER Diagram)
 - [System Architecture](.Architecture)
 
 ---
