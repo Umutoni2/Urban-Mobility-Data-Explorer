@@ -15,23 +15,22 @@
 
 ---
 
-## 🎬 Video Walkthrough
-
+## Video Walkthrough
 **[ADD YOUR VIDEO LINK HERE]**
 
 ---
 
-## 🚀 Project Evolution
+## Project Evolution
 
 ### Week 2: ETL Pipeline & Database
 Built a high-throughput streaming CSV pipeline with data validation, Haversine distance computation, fare estimation, and a normalised 5-table SQLite schema.
 
-### Week 3: REST API & Analytics Dashboard ✨ NEW!
+### Week 3: REST API & Analytics Dashboard  NEW!
 Delivered 7 REST API endpoints backed by a materialised stats cache, plus a 5-tab interactive dashboard with geo visualisation, Z-score anomaly detection, and paginated trip exploration.
 
 ---
 
-## ✨ What's New in Version 2.0
+## What's New in Version 2.0
 
 <table>
 <tr>
@@ -60,7 +59,7 @@ Delivered 7 REST API endpoints backed by a materialised stats cache, plus a 5-ta
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 nyc-taxi-explorer/
@@ -73,7 +72,7 @@ nyc-taxi-explorer/
 
 ---
 
-## ✅ Features
+## Features
 
 ### Data Pipeline
 ```
@@ -123,7 +122,7 @@ nyc-taxi-explorer/
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Prerequisites
 - **Node.js** v18 or higher — https://nodejs.org
@@ -178,7 +177,7 @@ curl http://localhost:3001/api/anomalies
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### System Overview
 
@@ -250,7 +249,7 @@ Entity Relationships:
 
 ---
 
-## 📡 API Documentation
+##  API Documentation
 
 ### Base URL
 ```
@@ -349,7 +348,7 @@ Returns Z-score population statistics and all flagged trips (|Z| > 2.5 on durati
 
 ---
 
-## 📊 Performance
+## Performance
 
 | Metric | v1 (before) | v2 (after) |
 |--------|-------------|------------|
@@ -362,7 +361,7 @@ Returns Z-score population statistics and all flagged trips (|Z| > 2.5 on durati
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### Backend
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
@@ -389,7 +388,7 @@ Algorithms:
 
 ---
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 # Verify server is healthy
@@ -410,21 +409,25 @@ curl "http://localhost:3001/api/trips?hour=8&vendor=1&sort=fare_estimate&order=d
 ## Team
 
 ## 👥 Team Members
-## 👥 Team Members
+### Olais Julius Laizer
+<img src="https://github.com/Olais11.png" width="80px"/>
+- GitHub: https://github.com/Olais11
+- Role: REST API & Testing
 
-<div>
-  <img src="https://github.com/Olais11.png" width="80px"/>
-  <p><b>Olais Julius Laizer</b><br/>
-  REST API & Testing<br/>
-  <a href="https://github.com/Olais11">@Olais11</a></p>
-</div>
+### Chibuzor Uzowuru Moses
+<img src="https://github.com/uzowurumauritius-rgb.png" width="80px"/>
+- GitHub: https://github.com/uzowurumauritius-rgb
+- Role: DSA Implementation
 
-<div>
-  <img src="https://github.com/uzowurumauritius-rgb.png" width="80px"/>
-  <p><b>Chibuzor Uzowuru Moses</b><br/>
-  DSA Implementation<br/>
-  <a href="https://github.com/uzowurumauritius-rgb">@uzowurumauritius-rgb</a></p>
-</div>
+### Peace Chukwuka
+<img src="https://github.com/pchukwuka.png" width="80px"/>
+- GitHub: https://github.com/pchukwuka
+- Role: Authentication & Documentation
+
+### Sylvie Umutoni Rutaganira
+<img src="https://github.com/Umutoni2.png" width="80px"/>
+- GitHub: https://github.com/Umutoni2
+- Role: XML Parsing & Integration
 ---
 
 ## Project Management
