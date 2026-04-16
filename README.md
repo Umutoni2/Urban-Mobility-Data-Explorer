@@ -409,50 +409,23 @@ curl "http://localhost:3001/api/trips?hour=8&vendor=1&sort=fare_estimate&order=d
 
 ## Team
 
-<table>
-<tr>
-<td align="center">
-<img src="https://github.com/Olais11.png" width="100px;" alt=""/>
-<br />
-<sub><b>Olais Julius Laizer</b></sub>
-<br />
-<a href="https://github.com/Olais11">@Olais11</a>
-<br />
-<i>REST API & Testing </i>
-</td>
+###  Team Members
 
-<td align="center">
-<img src="https://github.com/uzowurumauritius-rgb.png" width="100px;" alt=""/>
-<br />
-<sub><b>Chibuzor Uzowuru Moses</b></sub>
-<br />
-<a href="https://github.com/uzowurumauritius-rgb">@uzowurumauritius-rgb</a>
-<br />
-<i>DSA Implementation</i>
-</td>
+- **Olais Julius Laizer**  
+  🔗 https://github.com/Olais11  
+  _REST API & Testing_
 
-<td align="center">
-<img src="https://github.com/pchukwuka.png" width="100px;" alt=""/>
-<br />
-<sub><b>Peace Chukwuka</b></sub>
-<br />
-<a href="https://github.com/pchukwuka">@pchukwuka</a>
-<br />
-<i> Authentication& Documentation</i>
-</td>
+- **Chibuzor Uzowuru Moses**  
+  🔗 https://github.com/uzowurumauritius-rgb  
+  _DSA Implementation_
 
-<td align="center">
-<img src="https://github.com/Umutoni2.png" width="100px;" alt=""/>
-<br />
-<sub><b>Sylvie Umutoni Rutaganira</b></sub>
-<br />
-<a href="https://github.com/Umutoni2">@Umutoni2</a>
-<br />
-<i>XML Parsing & Integration</i>
-</td>
-</tr>
-</table>
+- **Peace Chukwuka**  
+  🔗 https://github.com/pchukwuka  
+  _Authentication & Documentation_
 
+- **Sylvie Umutoni Rutaganira**  
+  🔗 https://github.com/Umutoni2  
+  _XML Parsing & Integration_
 ---
 
 ## Project Management
