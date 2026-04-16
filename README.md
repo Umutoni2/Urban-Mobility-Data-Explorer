@@ -1,4 +1,4 @@
-                                    🚕 NYC Taxi Explorer:Urban Mobility Intelligence
+<h1 align="center">🚕 NYC Taxi Explorer: Urban Mobility Intelligence</h1>
 
 <div align="center">
 
