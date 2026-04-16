@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NYC Taxi Explorer — Urban Mobility Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#080b10;--bg2:#0d1117;--surface:#111820;--card:#141c26;
+  --border:#1c2736;--border2:#243040;--amber:#f0b429;
+  --amber-dim:rgba(240,180,41,.15);--cyan:#22d3ee;
+  --cyan-dim:rgba(34,211,238,.12);--green:#10b981;--red:#f43f5e;
+  --text:#dde4ee;--text2:#8a9ab0;--text3:#4a5a70;
+  --display:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+  --r:6px;--r2:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.landing{display:flex;flex-direction:column;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2.5rem;position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(8,11,16,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.brand{font-family:var(--display);font-size:.9rem;font-weight:800;letter-spacing:.04em;color:var(--text)}
+.brand em{color:var(--amber);font-style:normal}
+.topbar-right{display:flex;align-items:center;gap:1.5rem}
+.live-pill{display:flex;align-items:center;gap:.45rem;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:.3rem .75rem;font-family:var(--mono);font-size:.68rem;color:var(--text2)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.cta-btn{background:var(--amber);color:#0a0a00;border:none;border-radius:var(--r);padding:.5rem 1.2rem;font-family:var(--display);font-size:.8rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s,box-shadow .15s}
+.cta-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(240,180,41,.3)}
+.hero{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:9rem 2rem 5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.2;mask-image:radial-gradient(ellipse 80% 60% at 50% 40%,black 40%,transparent 100%)}
+.hero::after{content:'';position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(240,180,41,.07) 0%,transparent 70%);pointer-events:none}
+.hero-eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;opacity:0;animation:fadeUp .6s ease forwards .1s}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:28px;height:1px;background:var(--amber);opacity:.5}
+.hero-title{font-family:var(--display);font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;line-height:1.05;letter-spacing:-.02em;color:var(--text);margin-bottom:1.5rem;opacity:0;animation:fadeUp .65s ease forwards .2s}
+.hero-title .line2{color:var(--amber);display:block}
+.hero-sub{font-size:1rem;color:var(--text2);max-width:520px;line-height:1.7;margin-bottom:2.5rem;opacity:0;animation:fadeUp .65s ease forwards .35s}
+.hero-actions{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeUp .65s ease forwards .5s}
+.btn-primary{background:var(--amber);color:#0a0a00;border:none;border-radius:var(--r);padding:.75rem 1.8rem;font-family:var(--display);font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .2s;display:inline-flex;align-items:center;gap:.4rem}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(240,180,41,.35)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:var(--r);padding:.75rem 1.8rem;font-family:var(--display);font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s;display:inline-flex;align-items:center;gap:.4rem}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+.hero-stats{display:flex;gap:3rem;margin-top:4rem;flex-wrap:wrap;justify-content:center;opacity:0;animation:fadeUp .65s ease forwards .65s}
+.hero-stat-item{text-align:center}
+.hero-stat-num{font-family:var(--mono);font-size:1.6rem;font-weight:500;color:var(--amber);line-height:1;display:block}
+.hero-stat-label{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.3rem;display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.features{background:var(--bg2);border-top:1px solid var(--border);padding:5rem 2.5rem}
+.section-header{text-align:center;margin-bottom:3.5rem}
+.section-tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:.8rem;display:block}
+.section-title{font-family:var(--display);font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:800;color:var(--text);letter-spacing:-.02em;line-height:1.2}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.feature-card{background:var(--card);padding:2rem 1.75rem;transition:background .2s}
+.feature-card:hover{background:rgba(240,180,41,.04)}
+.feature-icon{font-size:1.4rem;margin-bottom:1rem;display:block}
+.feature-title{font-family:var(--display);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+.feature-desc{font-size:.83rem;color:var(--text2);line-height:1.65}
+.insights-preview{padding:5rem 2.5rem;background:var(--bg);border-top:1px solid var(--border)}
+.insights-inner{max-width:1100px;margin:0 auto}
+.insights-layout{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem}
+.insight-big{grid-row:span 2;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:2rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.insight-big::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--amber),var(--cyan))}
+.insight-small{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.5rem;display:flex;align-items:center;gap:1rem;transition:border-color .2s,transform .2s}
+.insight-small:hover{border-color:var(--border2);transform:translateY(-1px)}
+.insight-small-icon{width:40px;height:40px;border-radius:var(--r);background:var(--amber-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.insight-small-icon.cyan{background:var(--cyan-dim)}
+.insight-small-label{font-family:var(--mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:.25rem}
+.insight-small-val{font-family:var(--mono);font-size:1.2rem;font-weight:500;color:var(--text)}
+.insight-small-val span{font-size:.8rem;color:var(--text2);font-weight:400}
+.insight-big-title{font-family:var(--display);font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:.5rem}
+.insight-big-sub{font-size:.83rem;color:var(--text2);line-height:1.6;margin-bottom:1.5rem}
+.insight-big-num{font-family:var(--mono);font-size:3.5rem;font-weight:500;color:var(--amber);line-height:1;letter-spacing:-.03em}
+.insight-big-numlab{font-family:var(--mono);font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.4rem}
+.mini-bars{display:flex;align-items:flex-end;gap:3px;height:48px;margin-top:1.5rem}
+.mini-bar{flex:1;background:var(--amber-dim);border-radius:2px 2px 0 0;transition:background .2s}
+.mini-bar.hi{background:var(--amber)}
+.cta-band{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:4rem 2.5rem;text-align:center}
+.cta-band h2{font-family:var(--display);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;color:var(--text);margin-bottom:.75rem;letter-spacing:-.02em}
+.cta-band p{color:var(--text2);font-size:.9rem;margin-bottom:1.75rem}
+.dashboard{display:none;flex-direction:column;min-height:100vh}
+.dashboard.active{display:flex}
+.dash-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+.dash-logo{font-family:var(--display);font-size:.85rem;font-weight:800;color:var(--text)}
+.dash-logo em{color:var(--amber);font-style:normal}
+.dash-header-right{font-family:var(--mono);font-size:.68rem;color:var(--text2);display:flex;align-items:center;gap:1.25rem}
+.dash-back{background:var(--card);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:.3rem .8rem;font-family:var(--mono);font-size:.68rem;cursor:pointer;transition:border-color .2s,color .2s}
+.dash-back:hover{border-color:var(--amber);color:var(--amber)}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{font-family:var(--mono);font-size:.68rem;padding:.7rem 1.25rem;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;flex-shrink:0}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.dash-main{padding:1.5rem 2rem;max-width:1600px;margin:0 auto;width:100%;flex:1}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.25rem;position:relative;overflow:hidden;transition:border-color .2s;cursor:default}
+.kpi-card:hover{border-color:var(--border2)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.kpi-card:hover::before{transform:scaleX(1)}
+.kpi-label{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:.5rem}
+.kpi-value{font-family:var(--mono);font-size:1.45rem;font-weight:500;color:var(--amber);line-height:1}
+.kpi-sub{font-size:.72rem;color:var(--text3);margin-top:.3rem}
+.sec-title{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:var(--amber);margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.chart-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.1rem .9rem}
+.chart-card.full{grid-column:1/-1}
+.chart-card-title{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);margin-bottom:.75rem}
+.chart-wrap{position:relative;height:220px}
+.chart-wrap.tall{height:280px}
+.insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.insight-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--cyan);border-radius:var(--r2);padding:1rem 1.1rem;transition:transform .2s}
+.insight-card:hover{transform:translateY(-2px)}
+.insight-card.yellow{border-left-color:var(--amber)}
+.insight-card.green{border-left-color:var(--green)}
+.insight-card.red{border-left-color:var(--red)}
+.insight-icon{margin-bottom:.4rem}
+.insight-headline{font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:.2rem}
+.insight-body{font-size:.78rem;color:var(--text2);line-height:1.5}
+.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:.75rem 1rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:1rem}
+.filter-bar label{font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-right:.2rem}
+.filter-bar select,.filter-bar input{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);color:var(--text);padding:.32rem .55rem;font-family:var(--mono);font-size:.72rem;cursor:pointer;outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--amber)}
+.btn{background:var(--amber);color:#0a0a00;border:none;border-radius:var(--r);padding:.36rem 1rem;font-family:var(--mono);font-size:.7rem;font-weight:700;cursor:pointer;transition:opacity .15s,transform .12s;letter-spacing:.04em}
+.btn:hover{opacity:.88;transform:translateY(-1px)}
+.btn.secondary{background:var(--surface);color:var(--text2);border:1px solid var(--border)}
+.btn.secondary:hover{border-color:var(--border2);color:var(--text)}
+.table-wrap{overflow-x:auto;border-radius:var(--r2);border:1px solid var(--border);margin-bottom:1.25rem}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--surface);font-family:var(--mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);padding:.65rem .9rem;text-align:left;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;transition:color .15s}
+thead th:hover{color:var(--amber)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(240,180,41,.03)}
+tbody td{padding:.55rem .9rem;font-family:var(--mono);font-size:.7rem;color:var(--text);white-space:nowrap}
+.badge{display:inline-block;padding:.12rem .45rem;border-radius:3px;font-size:.63rem;font-weight:700;letter-spacing:.04em}
+.badge-v1{background:rgba(34,211,238,.15);color:var(--cyan)}
+.badge-v2{background:var(--amber-dim);color:var(--amber)}
+.pagination{display:flex;gap:.35rem;align-items:center;justify-content:flex-end;padding:.5rem .25rem}
+.page-btn{background:var(--surface);border:1px solid var(--border);color:var(--text2);border-radius:var(--r);padding:.25rem .65rem;font-family:var(--mono);font-size:.68rem;cursor:pointer;transition:border-color .15s,color .15s}
+.page-btn:hover:not(:disabled){border-color:var(--border2);color:var(--text)}
+.page-btn.active{background:var(--amber);color:#0a0a00;border-color:var(--amber);font-weight:700}
+.page-btn:disabled{opacity:.3;cursor:default}
+.page-info{font-family:var(--mono);font-size:.68rem;color:var(--text3);padding:0 .25rem}
+.anomaly-tag{display:inline-block;background:rgba(244,63,94,.12);color:var(--red);border-radius:3px;padding:.1rem .38rem;font-size:.63rem;font-family:var(--mono);margin:.08rem}
+.map-container{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);height:380px;position:relative;overflow:hidden;margin-bottom:1rem}
+#scatter-canvas{width:100%;height:100%;position:absolute;inset:0}
+.map-overlay{position:absolute;top:.9rem;left:.9rem;font-family:var(--mono);font-size:.68rem;color:var(--amber);background:rgba(8,11,16,.85);padding:.35rem .65rem;border-radius:var(--r);border:1px solid var(--border);backdrop-filter:blur(4px)}
+.loading{display:flex;align-items:center;justify-content:center;padding:2rem;font-family:var(--mono);font-size:.72rem;color:var(--text2);gap:.6rem}
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--amber);border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+#back-to-top{position:fixed;bottom:1.5rem;right:1.5rem;width:40px;height:40px;background:var(--amber);color:#0a0a00;border:none;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;z-index:300;box-shadow:0 4px 16px rgba(240,180,41,.3)}
+#back-to-top.visible{opacity:1;transform:translateY(0)}
+@media(max-width:900px){
+  .chart-grid,.chart-grid-3{grid-template-columns:1fr}
+  .chart-card.full{grid-column:1}
+  .insights-layout{grid-template-columns:1fr}
+  .insight-big{grid-row:auto}
+  .topbar{padding:1rem 1.25rem}
+  .hero{padding:8rem 1.25rem 4rem}
+  .features,.insights-preview,.cta-band{padding:3.5rem 1.25rem}
+  .dash-main{padding:1rem}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .hero-stats{gap:1.75rem}
+}
+@media(max-width:480px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .hero-title{font-size:2.2rem}
+  .features-grid{grid-template-columns:1fr}
+  .hero-stats{gap:1.25rem}
+}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="landing" class="landing">
+  <nav class="topbar">
+    <div class="brand"><em>NYC</em> TAXI EXPLORER</div>
+    <div class="topbar-right">
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        <span id="lp-status">connecting...</span>
+      </div>
+      <a href="#" class="cta-btn" onclick="openDashboard();return false;">Open Dashboard</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Urban Mobility Intelligence &middot; New York City</div>
+    <h1 class="hero-title">Every ride<span class="line2">tells a story.</span></h1>
+    <p class="hero-sub">Explore NYC taxi trips through real-time analytics; trip patterns, anomaly detection, geo mapping, and vendor intelligence. Built for speed.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary" onclick="openDashboard();return false;">Explore the Data</a>
+      <a href="#features" class="btn-ghost">How it works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat-item"><span class="hero-stat-num" id="hs-trips">—</span><span class="hero-stat-label">Total Trips</span></div>
+      <div class="hero-stat-item"><span class="hero-stat-num" id="hs-dist">—</span><span class="hero-stat-label">Avg Distance</span></div>
+      <div class="hero-stat-item"><span class="hero-stat-num" id="hs-fare">—</span><span class="hero-stat-label">Avg Fare</span></div>
+      <div class="hero-stat-item"><span class="hero-stat-num" id="hs-speed">—</span><span class="hero-stat-label">Avg Speed km/h</span></div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="section-header">
+      <span class="section-tag">What's inside</span>
+      <h2 class="section-title">Five analytical lenses<br>on NYC taxi data</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f0b429" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
+        <div class="feature-title">Overview Dashboard</div>
+        <div class="feature-desc">KPI cards, hourly and daily trip volumes, vendor comparison, passenger distribution, and monthly trends; all precomputed at startup for instant load.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f0b429" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></span>
+        <div class="feature-title">Time Pattern Analysis</div>
+        <div class="feature-desc">Hourly fare and speed curves reveal when the city is fastest, most expensive, and most active. Multi-dataset day-of-week breakdown included.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f0b429" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+        <div class="feature-title">Trip Explorer</div>
+        <div class="feature-desc">Paginated, filterable table of all trips. Filter by hour, day, vendor. Sort any column. Server-side pagination keeps responses fast.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f0b429" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3,6 9,3 15,6 21,3 21,18 15,21 9,18 3,21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></span>
+        <div class="feature-title">Geo Pickup Map</div>
+        <div class="feature-desc">Canvas scatter plot of up to 500 pickup coordinates, colored by speed. Includes a distance-vs-fare scatter and hour density chart.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f0b429" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+        <div class="feature-title">Anomaly Detection</div>
+        <div class="feature-desc">Custom Z-score algorithm (no libraries) identifies statistical outliers across duration, distance, speed, and fare. Flags trips where |z| &gt; 2.5.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="insights-preview">
+    <div class="insights-inner">
+      <div class="section-header">
+        <span class="section-tag">Live preview</span>
+        <h2 class="section-title">Key insights from the dataset</h2>
+      </div>
+      <div class="insights-layout" id="insights-layout">
+        <div class="loading" style="grid-column:1/-1"><div class="spinner"></div> Loading live data...</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <h2>Ready to explore the city?</h2>
+    <p>Dive into the full interactive dashboard: charts, maps, and raw data.</p>
+    <a href="#" class="btn-primary" onclick="openDashboard();return false;">Open Dashboard</a>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="dashboard">
+  <header class="dash-header">
+    <div class="dash-logo"><em>NYC</em> TAXI &mdash; Analytics Dashboard</div>
+    <div class="dash-header-right">
+      <span><span class="live-dot" style="display:inline-block"></span> <span id="dash-status">connecting...</span></span>
+      <span id="dash-range">—</span>
+      <span id="dash-trips">—</span>
+      <button class="dash-back" onclick="closeDashboard()">&#8592; Home</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active"  onclick="switchTab('overview')">Overview</div>
+    <div class="tab"         onclick="switchTab('time')">Time Patterns</div>
+    <div class="tab"         onclick="switchTab('trips')">Trip Explorer</div>
+    <div class="tab"         onclick="switchTab('map')">Geo Map</div>
+    <div class="tab"         onclick="switchTab('anomalies')">Anomalies</div>
+  </div>
+
+  <div class="dash-main">
+    <!-- OVERVIEW -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Total Trips</div><div class="kpi-value" id="kpi-trips">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Avg Duration</div><div class="kpi-value" id="kpi-dur">—</div><div class="kpi-sub">minutes</div></div>
+        <div class="kpi-card"><div class="kpi-label">Avg Distance</div><div class="kpi-value" id="kpi-dist">—</div><div class="kpi-sub">kilometres</div></div>
+        <div class="kpi-card"><div class="kpi-label">Avg Speed</div><div class="kpi-value" id="kpi-speed">—</div><div class="kpi-sub">km/h</div></div>
+        <div class="kpi-card"><div class="kpi-label">Avg Fare Est.</div><div class="kpi-value" id="kpi-fare">—</div><div class="kpi-sub">USD estimate</div></div>
+        <div class="kpi-card"><div class="kpi-label">Total Distance</div><div class="kpi-value" id="kpi-totaldist">—</div><div class="kpi-sub">km travelled</div></div>
+      </div>
+      <div class="sec-title">Key Insights</div>
+      <div class="insight-grid" id="insight-grid"><div class="loading"><div class="spinner"></div> Loading insights...</div></div>
+      <div class="chart-grid">
+        <div class="chart-card"><div class="chart-card-title">Trip volume by hour of day</div><div class="chart-wrap"><canvas id="chart-hour"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">Trip volume by day of week</div><div class="chart-wrap"><canvas id="chart-day"></canvas></div></div>
+      </div>
+      <div class="chart-grid-3">
+        <div class="chart-card"><div class="chart-card-title">Vendor split</div><div class="chart-wrap"><canvas id="chart-vendor"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">Passenger count distribution</div><div class="chart-wrap"><canvas id="chart-pax"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">Monthly trip trend</div><div class="chart-wrap"><canvas id="chart-monthly"></canvas></div></div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card"><div class="chart-card-title">Distance buckets — avg fare overlay</div><div class="chart-wrap"><canvas id="chart-distance"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">Speed distribution</div><div class="chart-wrap"><canvas id="chart-speed"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- TIME PATTERNS -->
+    <div id="tab-time" class="tab-content">
+      <div class="sec-title">Hourly Performance Breakdown</div>
+      <div class="chart-grid">
+        <div class="chart-card"><div class="chart-card-title">Average fare by hour</div><div class="chart-wrap tall"><canvas id="chart-fare-hour"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">Average speed by hour</div><div class="chart-wrap tall"><canvas id="chart-speed-hour"></canvas></div></div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card full"><div class="chart-card-title">Day-of-week — trips &middot; avg fare &middot; avg distance</div><div class="chart-wrap tall"><canvas id="chart-day-multi"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- TRIP EXPLORER -->
+    <div id="tab-trips" class="tab-content">
+      <div class="filter-bar">
+        <label>Hour</label>
+        <select id="f-hour"><option value="">All</option></select>
+        <label>Day</label>
+        <select id="f-day">
+          <option value="">All</option>
+          <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+          <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+        </select>
+        <label>Vendor</label>
+        <select id="f-vendor"><option value="">All</option><option value="1">Vendor 1</option><option value="2">Vendor 2</option></select>
+        <label>Sort by</label>
+        <select id="f-sort">
+          <option value="pickup_datetime">Date</option>
+          <option value="trip_distance_km">Distance</option>
+          <option value="trip_duration">Duration</option>
+          <option value="speed_kmh">Speed</option>
+          <option value="fare_estimate">Fare</option>
+        </select>
+        <select id="f-order"><option value="DESC">Desc</option><option value="ASC">Asc</option></select>
+        <button class="btn" onclick="loadTrips(1)">Apply</button>
+        <button class="btn secondary" onclick="resetFilters()">Reset</button>
+        <span id="trip-count" style="font-family:var(--mono);font-size:.68rem;color:var(--text2);margin-left:auto"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortByCol('pickup_datetime')">Date/Time</th>
+              <th onclick="sortByCol('vendor_id')">Vendor</th>
+              <th onclick="sortByCol('passenger_count')">Pax</th>
+              <th onclick="sortByCol('trip_duration')">Duration</th>
+              <th onclick="sortByCol('trip_distance_km')">Distance</th>
+              <th onclick="sortByCol('speed_kmh')">Speed</th>
+              <th onclick="sortByCol('fare_estimate')">Est. Fare</th>
+            </tr>
+          </thead>
+          <tbody id="trip-tbody">
+            <tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- GEO MAP -->
+    <div id="tab-map" class="tab-content">
+      <div class="filter-bar">
+        <label>Filter by hour</label>
+        <select id="map-hour"><option value="">All hours</option></select>
+        <button class="btn" onclick="loadMap()">Update Map</button>
+        <span id="map-count" style="font-family:var(--mono);font-size:.68rem;color:var(--text2);margin-left:auto"></span>
+      </div>
+      <div class="map-container">
+        <canvas id="scatter-canvas"></canvas>
+        <div class="map-overlay" id="map-label">NYC Pickup Locations</div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card"><div class="chart-card-title">Pickup density by hour</div><div class="chart-wrap"><canvas id="chart-map-hour"></canvas></div></div>
+        <div class="chart-card"><div class="chart-card-title">Distance vs Fare (scatter)</div><div class="chart-wrap"><canvas id="chart-dist-fare"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- ANOMALIES -->
+    <div id="tab-anomalies" class="tab-content">
+      <div class="sec-title">Anomaly Detection &mdash; Z-Score Method (manual implementation, no libraries)</div>
+      <div class="insight-grid" id="anomaly-stats"><div class="loading"><div class="spinner"></div> Analysing...</div></div>
+      <div class="sec-title">Flagged Trips (|Z| &gt; 2.5 on any metric)</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Trip ID</th><th>Date/Time</th><th>Duration</th>
+              <th>Distance</th><th>Speed</th><th>Fare Est.</th>
+              <th>Anomaly Flags</th>
+            </tr>
+          </thead>
+          <tbody id="anomaly-tbody">
+            <tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading anomalies...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&#8593;</button>
+
+<script>
+'use strict';
+const API = 'http://localhost:3001/api';
+let currentSort = 'pickup_datetime', currentOrder = 'DESC', currentPage = 1;
+let overviewLoaded = false, timeChartsRendered = false, anomaliesLoaded = false, mapLoaded = false;
+const charts = {};
+const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+(function buildHourOptions(){
+  ['f-hour','map-hour'].forEach(id=>{
+    const sel=document.getElementById(id);
+    for(let i=0;i<24;i++){const o=document.createElement('option');o.value=i;o.textContent=String(i).padStart(2,'0')+':00';sel.appendChild(o);}
+  });
+})();
+
+async function apiFetch(u){
+  try{const r=await fetch(API+u);if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}
+  catch(e){console.error('apiFetch',u,e.message);return null;}
+}
+
+Chart.defaults.color='#4a5a70';
+Chart.defaults.font.family="'JetBrains Mono', monospace";
+Chart.defaults.font.size=10;
+const CA='#f0b429',CC='#22d3ee',CG='#10b981',CR='#f43f5e';
+const CGrid='rgba(255,255,255,.04)';
+const CTT={backgroundColor:'#080b10',borderColor:'#1c2736',borderWidth:1,titleColor:'#8a9ab0',bodyColor:'#dde4ee'};
+
+function baseOpts(extra){
+  return Object.assign({responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:CTT},
+    scales:{x:{grid:{color:CGrid},ticks:{color:'#4a5a70'}},y:{grid:{color:CGrid},ticks:{color:'#4a5a70'}}}
+  },extra||{});
+}
+function mkChart(id,cfg){
+  if(charts[id]){charts[id].destroy();}
+  const el=document.getElementById(id);if(!el)return null;
+  charts[id]=new Chart(el.getContext('2d'),cfg);return charts[id];
+}
+
+const fmt={
+  dur:s=>{const m=Math.floor(+s/60),ss=Math.floor((+s)%60);return m+'m '+ss+'s';},
+  dist:d=>(+d).toFixed(2)+' km',
+  spd:s=>(+s).toFixed(1)+' km/h',
+  fare:f=>'$'+(+f).toFixed(2),
+  dt:d=>d?d.slice(0,16):'—',
+  num:n=>Number(n).toLocaleString(),
+km: n => (+n).toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' km'
+};
+
+function openDashboard(){
+  document.getElementById('landing').style.display='none';
+  document.getElementById('dashboard').classList.add('active');
+  if(!overviewLoaded){overviewLoaded=true;loadOverview();}
+  window.scrollTo(0,0);
+}
+function closeDashboard(){
+  document.getElementById('dashboard').classList.remove('active');
+  document.getElementById('landing').style.display='';
+  window.scrollTo(0,0);
+}
+
+const TAB_NAMES=['overview','time','trips','map','anomalies'];
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TAB_NAMES[i]===name));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='trips'&&!document.getElementById('trip-tbody').dataset.loaded)loadTrips(1);
+  if(name==='map'&&!mapLoaded){mapLoaded=true;loadMap();}
+  if(name==='anomalies'&&!anomaliesLoaded){anomaliesLoaded=true;loadAnomalies();}
+  if(name==='time'&&!timeChartsRendered)renderTimeCharts();
+}
+
+// ── LANDING PAGE STATS ──
+async function initLanding(){
+  const d=await apiFetch('/stats');
+  const online=!!d;
+  document.querySelectorAll('#lp-status,#dash-status').forEach(el=>el.textContent=online?'connected':'offline');
+  document.querySelectorAll('.live-dot').forEach(el=>el.style.background=online?'#10b981':'#f43f5e');
+  if(!d)return;
+  document.getElementById('hs-trips').textContent=fmt.num(d.trips);
+  document.getElementById('hs-dist').textContent=d.avg_dist+' km';
+  document.getElementById('hs-fare').textContent='$'+d.avg_fare;
+  document.getElementById('hs-speed').textContent=d.avg_speed;
+  document.getElementById('dash-range').textContent=d.dt_min?d.dt_min.slice(0,7)+' → '+d.dt_max.slice(0,7):'—';
+  document.getElementById('dash-trips').textContent=fmt.num(d.trips)+' trips';
+  renderLandingInsights(d);
+}
+
+function renderLandingInsights(s){
+  const lay=document.getElementById('insights-layout');
+  lay.innerHTML=`
+    <div class="insight-big">
+      <div>
+        <div class="insight-big-title">Total Trips Analysed</div>
+        <div class="insight-big-sub">Complete pipeline from raw CSV to interactive dashboard. Every record validated, enriched with 3 derived features, and indexed for sub-100ms queries.</div>
+        <div class="insight-big-num">${fmt.num(s.trips)}</div>
+        <div class="insight-big-numlab">NYC taxi trips processed</div>
+      </div>
+      <div class="mini-bars" id="mini-bars-placeholder"></div>
+    </div>
+    <div class="insight-small">
+      <div class="insight-small-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0b429" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="insight-small-label">Avg Distance</div>
+        <div class="insight-small-val">${s.avg_dist} <span>km / trip</span></div>
+      </div>
+    </div>
+    <div class="insight-small">
+      <div class="insight-small-icon cyan">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      </div>
+      <div>
+        <div class="insight-small-label">Avg Speed</div>
+        <div class="insight-small-val">${s.avg_speed} <span>km/h</span></div>
+      </div>
+    </div>`;
+  // Mini bars placeholder (will be hourly counts if available)
+  const bars=document.getElementById('mini-bars-placeholder');
+  if(bars){
+    const vals=[20,35,15,10,8,12,25,60,85,72,65,70,80,75,68,72,90,95,85,70,60,50,40,30];
+    const mx=Math.max(...vals);
+    bars.innerHTML=vals.map((v,i)=>`<div class="mini-bar${v===mx?' hi':''}" style="height:${Math.round(v/mx*100)}%" title="Hour ${i}:00 — relative volume"></div>`).join('');
+  }
+}
+
+// ── OVERVIEW ──
+async function loadOverview(){
+  await initLanding();
+  const d=await apiFetch('/overview');
+  if(!d)return;
+  const k=d.kpis;
+  document.getElementById('kpi-trips').textContent=fmt.num(k.total_trips);
+  document.getElementById('kpi-dur').textContent=(+k.avg_duration/60).toFixed(1);
+  document.getElementById('kpi-dist').textContent=(+k.avg_distance).toFixed(2);
+  document.getElementById('kpi-speed').textContent=(+k.avg_speed).toFixed(1);
+  document.getElementById('kpi-fare').textContent='$'+(+k.avg_fare).toFixed(2);
+  document.getElementById('kpi-totaldist').textContent=fmt.km(k.total_distance);
+  renderInsights(d);
+  renderOverviewCharts(d);
+}
+
+function renderInsights(d){
+  const k=d.kpis;
+  const peakHour=d.hourly.reduce((a,b)=>b.cnt>a.cnt?b:a,d.hourly[0]);
+  const topVendor=d.vendor.reduce((a,b)=>b.cnt>a.cnt?b:a,d.vendor[0]);
+  const pct=v=>(v.cnt/k.total_trips*100).toFixed(1);
+  document.getElementById('insight-grid').innerHTML=`
+    <div class="insight-card yellow">
+      <div class="insight-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0b429" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
+      <div class="insight-headline">Peak Hour: ${peakHour.hour}:00</div>
+      <div class="insight-body">${fmt.num(peakHour.cnt)} trips — the busiest single hour in the dataset, representing ${pct(peakHour)}% of all activity.</div>
+    </div>
+    <div class="insight-card green">
+      <div class="insight-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/></svg></div>
+      <div class="insight-headline">Avg Speed: ${(+k.avg_speed).toFixed(1)} km/h</div>
+      <div class="insight-body">Derived from Haversine distance ÷ trip duration. NYC traffic averages under 20 km/h during peak hours.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+      <div class="insight-headline">Vendor ${topVendor.vendor_id} Dominates</div>
+      <div class="insight-body">${pct(topVendor)}% of all trips — ${fmt.num(topVendor.cnt)} rides — were handled by Vendor ${topVendor.vendor_id}.</div>
+    </div>
+    <div class="insight-card red">
+      <div class="insight-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="insight-headline">Avg Fare: $${(+k.avg_fare).toFixed(2)}</div>
+      <div class="insight-body">Estimated from base rate + $1.56/km + $0.35/min. Short trips under 2 km still average $5+ due to base charge.</div>
+    </div>`;
+}
+
+function renderOverviewCharts(d){
+  const hours=Array.from({length:24},(_,i)=>String(i).padStart(2,'0')+':00');
+  const hourMap={};d.hourly.forEach(r=>hourMap[r.hour]=r.cnt);
+  mkChart('chart-hour',{type:'bar',data:{labels:hours,datasets:[{data:hours.map((_,i)=>hourMap[i]||0),backgroundColor:CA+'55',borderColor:CA,borderWidth:1,borderRadius:2}]},options:baseOpts()});
+
+  const days=DAY_NAMES;
+  const dayMap={};d.daily.forEach(r=>dayMap[r.day_of_week]=r.cnt);
+  mkChart('chart-day',{type:'bar',data:{labels:days,datasets:[{data:days.map((_,i)=>dayMap[i]||0),backgroundColor:CC+'44',borderColor:CC,borderWidth:1,borderRadius:2}]},options:baseOpts()});
+
+  mkChart('chart-vendor',{type:'doughnut',data:{labels:d.vendor.map(v=>'Vendor '+v.vendor_id),datasets:[{data:d.vendor.map(v=>v.cnt),backgroundColor:[CA,CC],borderColor:'#141c26',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'#8a9ab0',font:{size:10}}},tooltip:CTT}}});
+
+  const paxLabels=d.passenger.map(p=>p.passenger_count+' pax');
+  mkChart('chart-pax',{type:'bar',data:{labels:paxLabels,datasets:[{data:d.passenger.map(p=>p.cnt),backgroundColor:CG+'66',borderColor:CG,borderWidth:1,borderRadius:2}]},options:baseOpts()});
+
+  const mLabels=d.monthly.map(m=>MONTH_NAMES[(m.month-1)]);
+  mkChart('chart-monthly',{type:'line',data:{labels:mLabels,datasets:[{data:d.monthly.map(m=>m.cnt),borderColor:CA,backgroundColor:CA+'22',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:CA}]},options:baseOpts()});
+
+  mkChart('chart-distance',{type:'bar',data:{
+    labels:d.distBuckets.map(b=>b.bucket),
+    datasets:[
+      {label:'Trips',data:d.distBuckets.map(b=>b.cnt),backgroundColor:CA+'55',borderColor:CA,borderWidth:1,borderRadius:2,yAxisID:'y'},
+      {label:'Avg Fare ($)',data:d.distBuckets.map(b=>(+b.avg_fare).toFixed(2)),type:'line',borderColor:CC,backgroundColor:'transparent',yAxisID:'y1',tension:.4,pointRadius:3,pointBackgroundColor:CC}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#8a9ab0',font:{size:9}}},tooltip:CTT},
+      scales:{x:{grid:{color:CGrid},ticks:{color:'#4a5a70'}},y:{grid:{color:CGrid},ticks:{color:'#4a5a70'}},y1:{position:'right',grid:{display:false},ticks:{color:CC}}}}});
+
+  mkChart('chart-speed',{type:'bar',data:{labels:d.speedDist.map(s=>s.bucket+' km/h'),datasets:[{data:d.speedDist.map(s=>s.cnt),backgroundColor:CR+'55',borderColor:CR,borderWidth:1,borderRadius:2}]},options:baseOpts()});
+}
+
+// ── TIME PATTERNS ──
+async function renderTimeCharts(){
+  timeChartsRendered=true;
+  const d=await apiFetch('/time');
+  if(!d)return;
+  const hours=Array.from({length:24},(_,i)=>String(i).padStart(2,'0')+':00');
+  const fareMap={},spdMap={};
+  d.fareByHour.forEach(r=>{fareMap[r.hour]=(+r.avg_fare).toFixed(2);});
+  d.speedByHour.forEach(r=>{spdMap[r.hour]=(+r.avg_speed).toFixed(1);});
+
+  mkChart('chart-fare-hour',{type:'line',data:{labels:hours,datasets:[{data:hours.map((_,i)=>fareMap[i]||0),borderColor:CA,backgroundColor:CA+'18',fill:true,tension:.4,pointRadius:2,pointBackgroundColor:CA}]},options:baseOpts({scales:{x:{grid:{color:CGrid},ticks:{color:'#4a5a70'}},y:{grid:{color:CGrid},ticks:{color:'#4a5a70',callback:v=>'$'+v}}}})});
+  mkChart('chart-speed-hour',{type:'line',data:{labels:hours,datasets:[{data:hours.map((_,i)=>spdMap[i]||0),borderColor:CC,backgroundColor:CC+'18',fill:true,tension:.4,pointRadius:2,pointBackgroundColor:CC}]},options:baseOpts({scales:{x:{grid:{color:CGrid},ticks:{color:'#4a5a70'}},y:{grid:{color:CGrid},ticks:{color:'#4a5a70',callback:v=>v+' km/h'}}}})});
+
+  const days=DAY_NAMES;
+  const dm={};d.dayMulti.forEach(r=>{dm[r.day_of_week]=r;});
+  mkChart('chart-day-multi',{type:'bar',data:{
+    labels:days,
+    datasets:[
+      {label:'Trips',data:days.map((_,i)=>dm[i]?dm[i].cnt:0),backgroundColor:CA+'55',borderColor:CA,borderWidth:1,borderRadius:2,yAxisID:'y'},
+      {label:'Avg Fare ($)',data:days.map((_,i)=>dm[i]?(+dm[i].avg_fare).toFixed(2):0),type:'line',borderColor:CC,backgroundColor:'transparent',yAxisID:'y1',tension:.4,pointRadius:4,pointBackgroundColor:CC},
+      {label:'Avg Dist (km)',data:days.map((_,i)=>dm[i]?(+dm[i].avg_dist).toFixed(2):0),type:'line',borderColor:CG,backgroundColor:'transparent',yAxisID:'y1',tension:.4,pointRadius:4,pointBackgroundColor:CG}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{color:'#8a9ab0',font:{size:9}}},tooltip:CTT},
+      scales:{x:{grid:{color:CGrid},ticks:{color:'#4a5a70'}},y:{grid:{color:CGrid},ticks:{color:'#4a5a70'}},y1:{position:'right',grid:{display:false},ticks:{color:CC}}}}});
+}
+
+// ── TRIPS TABLE ──
+async function loadTrips(page){
+  currentPage=page||currentPage;
+  const hour=document.getElementById('f-hour').value;
+  const day=document.getElementById('f-day').value;
+  const vendor=document.getElementById('f-vendor').value;
+  const sort=document.getElementById('f-sort').value;
+  const order=document.getElementById('f-order').value;
+  let qs=`?page=${currentPage}&sort=${sort}&order=${order}`;
+  if(hour!=='')qs+=`&hour=${hour}`;
+  if(day!=='')qs+=`&day=${encodeURIComponent(day)}`;
+  if(vendor!=='')qs+=`&vendor=${vendor}`;
+  const tbody=document.getElementById('trip-tbody');
+  tbody.innerHTML='<tr><td colspan="7"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>';
+  const d=await apiFetch('/trips'+qs);
+  if(!d){tbody.innerHTML='<tr><td colspan="7" style="color:var(--red);text-align:center;padding:1rem">Failed to load</td></tr>';return;}
+  tbody.dataset.loaded='1';
+  document.getElementById('trip-count').textContent=fmt.num(d.total)+' trips found';
+  if(!d.trips.length){tbody.innerHTML='<tr><td colspan="7" style="color:var(--text3);text-align:center;padding:1.5rem">No trips match current filters.</td></tr>';renderPagination(0,0);return;}
+  tbody.innerHTML=d.trips.map(t=>`
+    <tr>
+      <td>${fmt.dt(t.pickup_datetime)}</td>
+      <td><span class="badge badge-v${t.vendor_id}">V${t.vendor_id}</span></td>
+      <td>${t.passenger_count}</td>
+      <td>${fmt.dur(t.trip_duration)}</td>
+      <td>${fmt.dist(t.trip_distance_km)}</td>
+      <td>${fmt.spd(t.speed_kmh)}</td>
+      <td>${fmt.fare(t.fare_estimate)}</td>
+    </tr>`).join('');
+  renderPagination(d.page,d.pages);
+}
+
+function renderPagination(page,pages){
+  const el=document.getElementById('pagination');
+  if(pages<=1){el.innerHTML='';return;}
+  const start=Math.max(1,page-2),end=Math.min(pages,page+2);
+  let html=`<button class="page-btn" onclick="loadTrips(1)" ${page===1?'disabled':''}>&#171;</button>
+    <button class="page-btn" onclick="loadTrips(${page-1})" ${page===1?'disabled':''}>&#8249;</button>`;
+  if(start>1)html+=`<span class="page-info">...</span>`;
+  for(let i=start;i<=end;i++)html+=`<button class="page-btn${i===page?' active':''}" onclick="loadTrips(${i})">${i}</button>`;
+  if(end<pages)html+=`<span class="page-info">...</span>`;
+  html+=`<button class="page-btn" onclick="loadTrips(${page+1})" ${page===pages?'disabled':''}>&#8250;</button>
+    <button class="page-btn" onclick="loadTrips(${pages})" ${page===pages?'disabled':''}>&#187;</button>`;
+  el.innerHTML=html;
+}
+
+function sortByCol(col){
+  const sortEl=document.getElementById('f-sort');
+  const orderEl=document.getElementById('f-order');
+  if(sortEl.value===col){orderEl.value=orderEl.value==='DESC'?'ASC':'DESC';}
+  else{sortEl.value=col;orderEl.value='DESC';}
+  loadTrips(1);
+}
+
+function resetFilters(){
+  document.getElementById('f-hour').value='';
+  document.getElementById('f-day').value='';
+  document.getElementById('f-vendor').value='';
+  document.getElementById('f-sort').value='pickup_datetime';
+  document.getElementById('f-order').value='DESC';
+  delete document.getElementById('trip-tbody').dataset.loaded;
+  loadTrips(1);
+}
+
+// ── GEO MAP ──
+async function loadMap(){
+  const hour=document.getElementById('map-hour').value;
+  let qs=hour!==''?`?hour=${hour}`:'';
+  const d=await apiFetch('/map'+qs);
+  if(!d)return;
+  document.getElementById('map-count').textContent=d.sampleSize+' points plotted';
+  document.getElementById('map-label').textContent='NYC Pickup Locations'+(hour!==''?' — '+String(hour).padStart(2,'0')+':00':'');
+  drawScatter(d.points);
+  renderMapCharts(d);
+}
+
+function drawScatter(pts){
+  const canvas=document.getElementById('scatter-canvas');
+  const rect=canvas.parentElement.getBoundingClientRect();
+  canvas.width=rect.width||800;canvas.height=rect.height||380;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#080b10';ctx.fillRect(0,0,canvas.width,canvas.height);
+  if(!pts||!pts.length)return;
+  // NYC bounds: lat 40.45–40.92, lon -74.27 to -73.62
+  const LAT_MIN=40.45,LAT_MAX=40.92,LON_MIN=-74.27,LON_MAX=-73.62;
+  const W=canvas.width,H=canvas.height;
+  pts.forEach(p=>{
+    const x=(p.lon-LON_MIN)/(LON_MAX-LON_MIN)*W;
+    const y=(1-(p.lat-LAT_MIN)/(LAT_MAX-LAT_MIN))*H;
+    const spd=Math.min(+p.speed_kmh,80);
+    const t=spd/80;
+    const r=Math.round((1-t)*244+t*34);
+    const g=Math.round((1-t)*63+t*211);
+    const b=Math.round((1-t)*94+t*238);
+    ctx.globalAlpha=0.7;
+    ctx.fillStyle=`rgb(${r},${g},${b})`;
+    ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+  // Legend
+  const lgW=120,lgH=14,lgX=W-lgW-12,lgY=H-30;
+  const grad=ctx.createLinearGradient(lgX,0,lgX+lgW,0);
+  grad.addColorStop(0,'#f43f5e');grad.addColorStop(1,'#22d3ee');
+  ctx.fillStyle=grad;ctx.fillRect(lgX,lgY,lgW,lgH);
+  ctx.fillStyle='rgba(8,11,16,.7)';ctx.fillRect(lgX-2,lgY+lgH+1,lgW+4,14);
+  ctx.fillStyle='#8a9ab0';ctx.font='9px JetBrains Mono,monospace';
+  ctx.fillText('slow',lgX,lgY+lgH+11);ctx.fillText('fast',lgX+lgW-22,lgY+lgH+11);
+}
+
+function renderMapCharts(d){
+  const hours=Array.from({length:24},(_,i)=>String(i).padStart(2,'0'));
+  const hm={};d.hourDensity.forEach(r=>hm[r.hour]=r.cnt);
+  if(charts['chart-map-hour'])charts['chart-map-hour'].destroy();
+  mkChart('chart-map-hour',{type:'bar',data:{labels:hours,datasets:[{data:hours.map((_,i)=>hm[i]||0),backgroundColor:CA+'55',borderColor:CA,borderWidth:1,borderRadius:2}]},options:baseOpts()});
+  if(charts['chart-dist-fare'])charts['chart-dist-fare'].destroy();
+  mkChart('chart-dist-fare',{type:'scatter',data:{datasets:[{data:d.distFare.map(p=>({x:+p.dist,y:+p.fare})),backgroundColor:CC+'66',pointRadius:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...CTT,callbacks:{label:c=>`${c.parsed.x.toFixed(1)}km → $${c.parsed.y.toFixed(2)}`}}},
+      scales:{x:{grid:{color:CGrid},ticks:{color:'#4a5a70',callback:v=>v+'km'},title:{display:true,text:'Distance (km)',color:'#4a5a70'}},
+              y:{grid:{color:CGrid},ticks:{color:'#4a5a70',callback:v=>'$'+v},title:{display:true,text:'Fare ($)',color:'#4a5a70'}}}}});
+}
+
+// ── ANOMALIES ──
+async function loadAnomalies(){
+  const d=await apiFetch('/anomalies');
+  if(!d)return;
+  const s=d.stats;
+  document.getElementById('anomaly-stats').innerHTML=`
+    <div class="insight-card yellow">
+      <div class="insight-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f0b429" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="insight-headline">${fmt.num(s.anomalies)} Anomalies Found</div>
+      <div class="insight-body">${s.pct}% of ${fmt.num(s.total)} trips flagged with |Z| &gt; 2.5 on at least one metric.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div class="insight-headline">Duration Stats</div>
+      <div class="insight-body">Mean: ${(s.avg_dur/60).toFixed(1)} min &nbsp;&bull;&nbsp; Std Dev: ${(s.std_dur/60).toFixed(1)} min<br>Threshold: &plusmn;2.5&sigma;</div>
+    </div>
+    <div class="insight-card green">
+      <div class="insight-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg></div>
+      <div class="insight-headline">Distance Stats</div>
+      <div class="insight-body">Mean: ${(+s.avg_dist).toFixed(2)} km &nbsp;&bull;&nbsp; Std Dev: ${(+s.std_dist).toFixed(2)} km</div>
+    </div>
+    <div class="insight-card red">
+      <div class="insight-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+      <div class="insight-headline">Speed Stats</div>
+      <div class="insight-body">Mean: ${(+s.avg_spd).toFixed(1)} km/h &nbsp;&bull;&nbsp; Std Dev: ${(+s.std_spd).toFixed(1)} km/h</div>
+    </div>`;
+
+  const tbody=document.getElementById('anomaly-tbody');
+  if(!d.trips.length){tbody.innerHTML='<tr><td colspan="7" style="color:var(--text3);text-align:center;padding:1.5rem">No anomalies found.</td></tr>';return;}
+  tbody.innerHTML=d.trips.map(t=>`
+    <tr>
+      <td style="color:var(--text3);font-size:.63rem">${t.id}</td>
+      <td>${fmt.dt(t.pickup_datetime)}</td>
+      <td>${fmt.dur(t.trip_duration)}</td>
+      <td>${fmt.dist(t.trip_distance_km)}</td>
+      <td>${fmt.spd(t.speed_kmh)}</td>
+      <td>${fmt.fare(t.fare_estimate)}</td>
+      <td>${t.flags.map(f=>`<span class="anomaly-tag">${f.m} z=${f.z}</span>`).join(' ')}</td>
+    </tr>`).join('');
+}
+
+// ── BACK TO TOP ──
+window.addEventListener('scroll',()=>{
+  document.getElementById('back-to-top').classList.toggle('visible',window.scrollY>300);
+});
+
+// ── INIT ──
+initLanding();
+</script>
+</body>
+</html>

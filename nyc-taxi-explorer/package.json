@@ -1,0 +1,15 @@
+{
+  "name": "nyc-taxi-explorer",
+  "version": "1.0.0",
+  "description": "NYC Taxi Urban Mobility Intelligence Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
