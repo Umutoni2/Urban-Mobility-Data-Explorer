@@ -1,4 +1,4 @@
-# 🚕 NYC Taxi Explorer — Urban Mobility Intelligence
+# 🚕 NYC Taxi Explorer:Urban Mobility Intelligence
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 ![NODE](https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square&logo=node.js)
 ![LICENSE](https://img.shields.io/badge/license-educational-lightgrey?style=flat-square&logo=open-source-initiative)
 
-**A full-stack data analytics dashboard for exploring 1.3M+ NYC taxi trips — featuring a streaming ETL pipeline, normalised SQLite database, Z-score anomaly detection, and a rich interactive frontend.**
+   **A full-stack data analytics dashboard for exploring 1.3M+ NYC taxi trips,featuring a streaming ETL pipeline, normalised SQLite database, Z-score anomaly  detection, and a rich interactive frontend.**
 
 [Features](#features) • [Quick Start](#quick-start) • [API Docs](#api-documentation) • [Architecture](#architecture) • [Team](#team)
 
