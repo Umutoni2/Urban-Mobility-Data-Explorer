@@ -3,7 +3,7 @@
 <div align="center">
 
 ![STATUS](https://img.shields.io/badge/status-active-success?style=flat-square&logo=github)
-![VERSION](https://img.shields.io/badge/version-2.0-blue?style=flat-square&logo=semantic-release)
+![VERSION](https://img.shields.io/badge/version-1.0-blue?style=flat-square&logo=semantic-release)
 ![NODE](https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square&logo=node.js)
 ![LICENSE](https://img.shields.io/badge/license-educational-lightgrey?style=flat-square&logo=open-source-initiative)
 
@@ -20,17 +20,17 @@
 
 ---
 
-## Project Evolution
+## Development Sprints
 
-### Week 2: ETL Pipeline & Database
+### Sprint 2 (Week 2): ETL Pipeline & Database
 Built a high-throughput streaming CSV pipeline with data validation, Haversine distance computation, fare estimation, and a normalised 5-table SQLite schema.
 
-### Week 3: REST API & Analytics Dashboard  NEW!
+### Sprint 3 (Week 3): REST API & Analytics Dashboard
 Delivered 7 REST API endpoints backed by a materialised stats cache, plus a 5-tab interactive dashboard with geo visualisation, Z-score anomaly detection, and paginated trip exploration.
 
 ---
 
-## What's New in Version 2.0
+## Feature Highlights
 
 <table>
 <tr>
@@ -350,8 +350,8 @@ Returns Z-score population statistics and all flagged trips (|Z| > 2.5 on durati
 
 ## Performance
 
-| Metric | v1 (before) | v2 (after) |
-|--------|-------------|------------|
+| Metric | Before Optimization | After Optimization |
+|--------|--------------------|--------------------|
 | ETL batch size | 500 rows | 200,000 rows |
 | ETL commit count | ~2,600 | ~7 |
 | ETL runtime | 45–90 s | 10–20 s |
