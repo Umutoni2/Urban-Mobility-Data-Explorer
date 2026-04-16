@@ -409,23 +409,28 @@ curl "http://localhost:3001/api/trips?hour=8&vendor=1&sort=fare_estimate&order=d
 
 ## Team
 
-###  Team Members
+## 👥 Team Members
 
-- **Olais Julius Laizer**  
-  🔗 https://github.com/Olais11  
-  _REST API & Testing_
+### Olais Julius Laizer
+<img src="https://github.com/Olais11.png" width="80px"/>
+- GitHub: https://github.com/Olais11
+- Role: REST API & Testing
 
-- **Chibuzor Uzowuru Moses**  
-  🔗 https://github.com/uzowurumauritius-rgb  
-  _DSA Implementation_
+### Chibuzor Uzowuru Moses
+<img src="https://github.com/uzowurumauritius-rgb.png" width="80px"/>
+- GitHub: https://github.com/uzowurumauritius-rgb
+- Role: DSA Implementation
 
-- **Peace Chukwuka**  
-  🔗 https://github.com/pchukwuka  
-  _Authentication & Documentation_
+### Peace Chukwuka
+<img src="https://github.com/pchukwuka.png" width="80px"/>
+- GitHub: https://github.com/pchukwuka
+- Role: Authentication & Documentation
 
-- **Sylvie Umutoni Rutaganira**  
-  🔗 https://github.com/Umutoni2  
-  _XML Parsing & Integration_
+### Sylvie Umutoni Rutaganira
+<img src="https://github.com/Umutoni2.png" width="80px"/>
+- GitHub: https://github.com/Umutoni2
+- Role: XML Parsing & Integration
+- 
 ---
 
 ## Project Management
