@@ -410,27 +410,21 @@ curl "http://localhost:3001/api/trips?hour=8&vendor=1&sort=fare_estimate&order=d
 ## Team
 
 ## 👥 Team Members
+## 👥 Team Members
 
-### Olais Julius Laizer
-<img src="https://github.com/Olais11.png" width="80px"/>
-- GitHub: https://github.com/Olais11
-- Role: REST API & Testing
+<div>
+  <img src="https://github.com/Olais11.png" width="80px"/>
+  <p><b>Olais Julius Laizer</b><br/>
+  REST API & Testing<br/>
+  <a href="https://github.com/Olais11">@Olais11</a></p>
+</div>
 
-### Chibuzor Uzowuru Moses
-<img src="https://github.com/uzowurumauritius-rgb.png" width="80px"/>
-- GitHub: https://github.com/uzowurumauritius-rgb
-- Role: DSA Implementation
-
-### Peace Chukwuka
-<img src="https://github.com/pchukwuka.png" width="80px"/>
-- GitHub: https://github.com/pchukwuka
-- Role: Authentication & Documentation
-
-### Sylvie Umutoni Rutaganira
-<img src="https://github.com/Umutoni2.png" width="80px"/>
-- GitHub: https://github.com/Umutoni2
-- Role: XML Parsing & Integration
-- 
+<div>
+  <img src="https://github.com/uzowurumauritius-rgb.png" width="80px"/>
+  <p><b>Chibuzor Uzowuru Moses</b><br/>
+  DSA Implementation<br/>
+  <a href="https://github.com/uzowurumauritius-rgb">@uzowurumauritius-rgb</a></p>
+</div>
 ---
 
 ## Project Management
