@@ -22,10 +22,10 @@
 
 ## Development Sprints
 
-### Sprint 2 (Week 2): ETL Pipeline & Database
+### Sprint 1 : ETL Pipeline & Database
 Built a high-throughput streaming CSV pipeline with data validation, Haversine distance computation, fare estimation, and a normalised 5-table SQLite schema.
 
-### Sprint 3 (Week 3): REST API & Analytics Dashboard
+### Sprint 2 : REST API & Analytics Dashboard
 Delivered 7 REST API endpoints backed by a materialised stats cache, plus a 5-tab interactive dashboard with geo visualisation, Z-score anomaly detection, and paginated trip exploration.
 
 ---
