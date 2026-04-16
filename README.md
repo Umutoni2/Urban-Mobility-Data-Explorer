@@ -16,7 +16,7 @@
 ---
 
 ## Video Walkthrough
-**[ADD YOUR VIDEO LINK HERE]**
+**[VIDEO LINK HERE]**
 
 ---
 
@@ -536,7 +536,8 @@ npm start
 
 - [API Reference](#api-documentation) — all 7 endpoints with request/response examples
 - [Database Schema](schema.sql) — full DDL, index definitions, and data cleaning rules
-- [ERD Diagram](docs/ERD.pdf) 
+- [ERD Diagram](ER Diagram.pdf)
+- [System Architecture](.Architecture)
 
 ---
 
