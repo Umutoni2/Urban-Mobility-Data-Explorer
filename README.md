@@ -63,11 +63,13 @@ Delivered 7 REST API endpoints backed by a materialised stats cache, plus a 5-ta
 
 ```
 nyc-taxi-explorer/
-├── server.js        # Backend: CSV pipeline, SQLite DB, REST API, static server
-├── index.html       # Frontend: landing page + interactive dashboard
+├── backend/                        
+│   └── server.js    # Backend: CSV pipeline, SQLite DB, REST API, static server
+├── frontend/                        
+│   └── index.html   # Frontend: landing page + interactive dashboard
 ├── schema.sql       # Database schema reference (auto-applied by server.js on first run)
-├── package.json     # Dependencies (only better-sqlite3)
-└── train.csv        # ← YOU MUST PLACE THE DATASET HERE (see Dataset Setup)
+├── package.json     # Dependencies
+└── train.csv        # ← YOU MUST PLACE THE DATASET HERE (see below)
 ```
 
 ---
